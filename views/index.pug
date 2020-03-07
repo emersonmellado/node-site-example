@@ -1,12 +1,14 @@
 extends ./layout.pug
 
 block content
-  h1 Superheroes
-  p This site shows superheroes information
-  include ./create.pug
-  br
-  each superheroe in superheroes
-    div.superheroe-container
-      a(href="/superheroes/" + superheroe.id)
-        img(src='/img/superheroes/' + superheroe.image)
-        h3= superheroe.name
+    a(href="/create" class="btn btn-primary") Create
+    hr
+    div(class="card-group")
+        each superheroe in superheroes
+            div(class="col-xs-12 col-md-4 col-lg-3")
+                a(href="/superheroes/" + superheroe.id)
+                    div(class="card")
+                        img(class="card-img-top" src='/img/superheroes/' + superheroe.image alt="superheroe.image")
+                        div(class="card-body")
+                            h5(class="card-title")= superheroe.name
+                            p(class="card-text")= superheroe.name

@@ -1,5 +1,8 @@
 extends ./layout.pug
 
 block content
-  img(src='/img/superheroes/' + superheroe.image)
-  h3= superheroe.name
+  div(class="card" style="width: 18rem;")
+    img(class="card-img-top" src='/img/superheroes/' + superheroe.image alt="superheroe.image")
+    div(class="card-body")
+      h5(class="card-title")= superheroe.name
+      p(class="card-text")= superheroe.name

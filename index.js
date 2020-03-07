@@ -38,6 +38,10 @@ app.get('/', (req, res) => {
     res.render('index', { superheroes: superheroes });
 });
 
+app.get('/create', (req, res)=>{
+    res.render('create');
+})
+
 app.get('/superheroes/', (req, res) => {
     res.render('superhero', { superheroes: superheroes });
 });
