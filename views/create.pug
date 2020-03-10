@@ -1,7 +1,8 @@
 extends ./layout.pug
 
 block content
-    form(action="/superheros" method="post" enctype="multipart/form-data")
+    p This is a form that you can use to create a new superhero
+    form(action="/superheroes" method="post" enctype="multipart/form-data")
         input(type="file" placeholder="superhero picture" name="file")
         input(type="text" placeholder="suerhero name" required="required" name="superhero")
         button Create

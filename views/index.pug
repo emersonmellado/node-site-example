@@ -2,13 +2,14 @@ extends ./layout.pug
 
 block content
     a(href="/create" class="btn btn-primary") Create
+    p= variables.pageTitle
     hr
     div(class="card-group")
-        each superheroe in superheroes
+        each sh in variables.superheroes
             div(class="col-xs-12 col-md-4 col-lg-3")
-                a(href="/superheroes/" + superheroe.id)
+                a(href="/superheroes/" + sh.id)
                     div(class="card")
-                        img(class="card-img-top" src='/img/superheroes/' + superheroe.image alt="superheroe.image")
+                        img(class="card-img-top" src='/img/superheroes/' + sh.image alt="sh.image")
                         div(class="card-body")
-                            h5(class="card-title")= superheroe.name
-                            p(class="card-text")= superheroe.name
+                            h5(class="card-title")= sh.name
+                            p(class="card-text")= sh.name
