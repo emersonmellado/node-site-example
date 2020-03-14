@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
+const url = 'mongodb://localhost:27017';
 
 const bodyParser = require('body-parser');
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
@@ -24,28 +27,21 @@ app.use('/', express.static('public'));
 //using the convention to have all views in views folder.
 app.set('view engine', 'pug');
 
-//Declaring a global array called superheroes with three properties
-const superheroes = [
-    { id: 1, name: 'SPIDER-MAN', image: 'spiderman.jpg' },
-    { id: 2, name: 'CAPTAIN MARVEL', image: 'captainmarvel.jpg' },
-    { id: 3, name: 'Hulk', image: 'hulk.jpg' },
-    { id: 4, name: 'Thor', image: 'thor.jpg' },
-    { id: 5, name: 'IRON MAN', image: 'ironman.jpg' },
-    { id: 6, name: 'DAREDEVIL', image: 'daredevil.jpg' },
-    { id: 7, name: 'BLACK WIDOW', image: 'blackwidow.jpg' },
-    { id: 8, name: 'CAPTAIN AMERICA', image: 'captanamerica.jpg' },
-    { id: 9, name: 'WOLVERINE', image: 'wolverine.jpg' },
-];
-
-superheroes.reverse();
-
 app.get('/', (req, res) => {
     //internal scope of this function
-    const indexVariables = {
-        pageTitle: "First page of our app",
-        superheroes: superheroes
-    }
-    res.render('index', { variables: indexVariables });
+	MongoClient.connect(url, function(err, client) {
+		const db = client.db('comics');
+		const collection = db.collection('superheroes');
+
+		collection.find({}).toArray((error, documents) => {
+            client.close();
+            const indexVariables = {
+                pageTitle: "First page of our app",
+                superheroes: documents
+            }
+            res.render('index', { variables: indexVariables });
+		});
+	});
 });
 
 app.get('/create', (req, res) => {
@@ -60,17 +56,16 @@ app.get('/superheroes/', (req, res) => {
 
 app.get('/superheroes/:id', (req, res) => {
     //internal scope of this function
-    const selectedId = req.params.id;
+    MongoClient.connect(url, function(err, client) {
+		const db = client.db('comics');
+		const collection = db.collection('superheroes');
+        const selectedId = req.params.id;
 
-    let selectedSuperhero = superheroes.filter(superhero => {
-        console.log("Superhero: ", superhero.id, superhero.id === +selectedId);
-
-        return superhero.id === +selectedId;
-    });
-
-    selectedSuperhero = selectedSuperhero[0];
-
-    res.render('superhero', { superheroe: selectedSuperhero });
+		collection.find({"_id": ObjectID(selectedId)}).toArray((error, documents) => {
+            client.close();
+            res.render('superhero', { superheroe: documents[0] });
+		});
+	});
 });
 
 app.post('/superheroes', upload.single('file'), (req, res) => {
