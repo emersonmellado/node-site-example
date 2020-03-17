@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
+const url = 'mongodb://localhost:27017';
 
 const bodyParser = require('body-parser');
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
@@ -23,7 +26,6 @@ app.use('/', express.static('public'));
 //Setting up pug as template engine
 //using the convention to have all views in views folder.
 app.set('view engine', 'pug');
-
 
 //Index - Entry point - First page a user will see 
 app.get('/', (req, res) => {
@@ -53,17 +55,16 @@ app.get('/create', (req, res) => {
 //detail view
 app.get('/superheroes/:id', (req, res) => {
     //internal scope of this function
-    const selectedId = req.params.id;
+    MongoClient.connect(url, function(err, client) {
+		const db = client.db('comics');
+		const collection = db.collection('superheroes');
+        const selectedId = req.params.id;
 
-    let selectedSuperhero = superheroes.filter(superhero => {
-        console.log("Superhero: ", superhero.id, superhero.id === +selectedId);
-
-        return superhero.id === +selectedId;
-    });
-
-    selectedSuperhero = selectedSuperhero[0];
-
-    res.render('superhero', { superheroe: selectedSuperhero });
+		collection.find({"_id": ObjectID(selectedId)}).toArray((error, documents) => {
+            client.close();
+            res.render('superhero', { superheroe: documents[0] });
+		});
+	});
 });
 
 //delete endpoint
