@@ -1,0 +1,15 @@
+extends ./layout.pug
+
+block content
+  h1 Update view
+  p This is a form that you can use to update a superhero
+  form(action="/superheroUpdate/" + superheroe._id method="post" enctype="multipart/form-data")
+      input(type="file" placeholder="superhero picture" name="file")
+      input(type="text" value=superheroe.name placeholder="superhero name" required="required" name="superhero")
+      button Update
+
+  div(class="card" style="width: 18rem;")
+    img(class="card-img-top" src='/img/superheroes/' + superheroe.image alt="superheroe.image")
+    div(class="card-body")
+      h5(class="card-title")= superheroe.name
+      p(class="card-text")= superheroe.name

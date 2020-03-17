@@ -30,11 +30,11 @@ app.set('view engine', 'pug');
 //Index - Entry point - First page a user will see 
 app.get('/', (req, res) => {
     //internal scope of this function
-	MongoClient.connect(url, function(err, client) {
-		const db = client.db('comics');
-		const collection = db.collection('superheroes');
+    MongoClient.connect(url, function (err, client) {
+        const db = client.db('comics');
+        const collection = db.collection('superheroes');
 
-		collection.find({}).toArray((error, documents) => {
+        collection.find({}).toArray((error, documents) => {
             client.close();
             documents.reverse();
             const indexVariables = {
@@ -42,8 +42,8 @@ app.get('/', (req, res) => {
                 superheroes: documents
             }
             res.render('index', { variables: indexVariables });
-		});
-	});
+        });
+    });
 });
 
 //Create endpoint
@@ -55,32 +55,48 @@ app.get('/create', (req, res) => {
 //detail view
 app.get('/superheroes/:id', (req, res) => {
     //internal scope of this function
-    MongoClient.connect(url, function(err, client) {
-		const db = client.db('comics');
-		const collection = db.collection('superheroes');
+    MongoClient.connect(url, function (err, client) {
+        const db = client.db('comics');
+        const collection = db.collection('superheroes');
         const selectedId = req.params.id;
 
-		collection.find({"_id": ObjectID(selectedId)}).toArray((error, documents) => {
+        collection.find({ "_id": ObjectID(selectedId) }).toArray((error, documents) => {
             client.close();
             res.render('superhero', { superheroe: documents[0] });
-		});
-	});
+        });
+    });
+});
+
+//update view
+app.get('/update/:id', (req, res) => {
+    //internal scope of this function
+    MongoClient.connect(url, function (err, client) {
+        const db = client.db('comics');
+        const collection = db.collection('superheroes');
+        const selectedId = req.params.id;
+
+        collection.find({ "_id": ObjectID(selectedId) }).toArray((error, documents) => {
+            client.close();
+            res.render('update', { superheroe: documents[0] });
+        });
+    });
 });
 
 //delete endpoint
 app.get('/delete/:id', (req, res) => {
     //internal scope of this function
-    MongoClient.connect(url, function(err, client) {
-		const db = client.db('comics');
-		const collection = db.collection('superheroes');
+    MongoClient.connect(url, function (err, client) {
+        const db = client.db('comics');
+        const collection = db.collection('superheroes');
         const idToDelete = req.params.id;
 
-		collection.deleteOne({"_id": ObjectID(idToDelete)});
+        collection.deleteOne({ "_id": ObjectID(idToDelete) });
         client.close();
         res.redirect('/');
-	});
+    });
 });
 
+//Create post method
 app.post('/superheroes', upload.single('file'), (req, res) => {
     //internal scope of this function
     const newSuperHero = {
@@ -89,15 +105,48 @@ app.post('/superheroes', upload.single('file'), (req, res) => {
     }
 
     //Replace .push() to a mongodb call
-    MongoClient.connect(url, function(err, client) {
-		const db = client.db('comics');
-		const collection = db.collection('superheroes');
+    MongoClient.connect(url, function (err, client) {
+        const db = client.db('comics');
+        const collection = db.collection('superheroes');
 
         collection.insertOne(newSuperHero);
-        
+
         client.close();
         res.redirect('/');
-	});
+    });
+});
+
+//Update method superheroeUpdate
+app.post('/superheroUpdate/:id', upload.single('file'), (req, res) => {
+
+    MongoClient.connect(url, function (err, client) {
+        const db = client.db('comics');
+        const collection = db.collection('superheroes');
+        const selectedId = req.params.id;
+
+        //from command line we update an object collection with the following syntax
+        //db.superheroes.updateOne({"name":"ANT MAN"}, { $set: { "name":"ANT MAN 1"} })
+
+        let filter = { "_id": ObjectID(selectedId) };
+
+        let updateObject = {
+            "name": req.body.superhero.toUpperCase(),
+        }
+
+        if (req.file){
+            console.log("Updating image");
+            updateObject.image = req.file.filename;
+        }
+        
+        let update = {
+            $set: updateObject
+        };
+
+        collection.updateOne(filter, update);
+
+        client.close();
+        res.redirect('/');
+    });
 });
 
 app.listen(port, () => {
