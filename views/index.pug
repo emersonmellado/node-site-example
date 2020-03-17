@@ -7,7 +7,7 @@ block content
     div(class="card-group")
         each sh in variables.superheroes
             div(class="col-xs-12 col-md-4 col-lg-3")
-                a(href="/superheroes/" + sh.id)
+                a(href="/superheroes/" + sh._id)
                     div(class="card")
                         img(class="card-img-top" src='/img/superheroes/' + sh.image alt="sh.image")
                         div(class="card-body")
