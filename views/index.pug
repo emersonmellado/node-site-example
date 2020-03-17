@@ -4,12 +4,13 @@ block content
     a(href="/create" class="btn btn-primary") Create
     p= variables.pageTitle
     hr
-    div(class="card-group")
+    .card-group
         each sh in variables.superheroes
-            div(class="col-xs-12 col-md-4 col-lg-3")
+            .col-xs-12.col-md-4.col-lg-3
                 a(href="/superheroes/" + sh._id)
-                    div(class="card")
-                        img(class="card-img-top" src='/img/superheroes/' + sh.image alt="sh.image")
-                        div(class="card-body")
+                    .card
+                        img(class="card-img-top" src='/img/superheroes/' + sh.image alt=sh.image)
+                        .card-body
                             h5(class="card-title")= sh.name
                             p(class="card-text")= sh.name
+                            a(href="/delete/" + sh._id class="btn btn-danger") Delete
