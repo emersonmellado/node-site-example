@@ -3,6 +3,7 @@ const app = express();
 const port = 3000;
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
+const fs = require('fs');
 const url = 'mongodb://localhost:27017';
 
 const bodyParser = require('body-parser');
@@ -90,7 +91,16 @@ app.get('/delete/:id', (req, res) => {
         const collection = db.collection('superheroes');
         const idToDelete = req.params.id;
 
+        //Delete the image on public/img/superheroes folder        
+        collection.find({ "_id": ObjectID(idToDelete) }).toArray((error, documents) => {
+            fs.unlink(__dirname + "/public/img/superheroes/" + documents[0].image, (err) => {
+                if (err) throw err;
+                console.log('successfully deleted images from folder superheroes');
+            });
+        });
+
         collection.deleteOne({ "_id": ObjectID(idToDelete) });
+
         client.close();
         res.redirect('/');
     });
@@ -124,20 +134,27 @@ app.post('/superheroUpdate/:id', upload.single('file'), (req, res) => {
         const collection = db.collection('superheroes');
         const selectedId = req.params.id;
 
+        //Delete the old hero image
+        collection.find({ "_id": ObjectID(selectedId) }).toArray((error, documents) => {
+            fs.unlink(__dirname + "/public/img/superheroes/" + documents[0].image, (err) => {
+                if (err) throw err;
+                console.log('successfully deleted images from folder superheroes');
+            });
+        });
+
         //from command line we update an object collection with the following syntax
         //db.superheroes.updateOne({"name":"ANT MAN"}, { $set: { "name":"ANT MAN 1"} })
-
         let filter = { "_id": ObjectID(selectedId) };
 
         let updateObject = {
             "name": req.body.superhero.toUpperCase(),
         }
 
-        if (req.file){
+        if (req.file) {
             console.log("Updating image");
             updateObject.image = req.file.filename;
         }
-        
+
         let update = {
             $set: updateObject
         };

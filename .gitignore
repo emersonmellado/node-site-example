@@ -1,1 +1,5 @@
+# Removing node_modules folder
 node_modules
+
+# Removing MacOS thumbnail files
+.DS_Store
