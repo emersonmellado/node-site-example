@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
-const port = 3000;
+const port = process.env.PORT || 3000;
+
 //Mongoose implementation
 const mongoose = require('mongoose');
 let uri = "mongodb://node-site-example:node-site-example1234@cluster0-shard-00-00-1regk.mongodb.net:27017,cluster0-shard-00-01-1regk.mongodb.net:27017,cluster0-shard-00-02-1regk.mongodb.net:27017/comics?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true&w=majority";
